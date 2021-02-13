@@ -35,6 +35,7 @@ header > .container {
   width: 50%;
   justify-content: center;
   gap: 6rem;
+  margin-left: 5rem;
 }
 
 .navbar ul li {
@@ -66,6 +67,20 @@ header > .container {
 
 .navbar ul li:hover::after {
   transform: scaleX(1);
+}
+
+.move-button > button {
+  background-color: #eceba5;
+  height: 40px;
+  width: 90px;
+  border: none;
+  outline: none;
+  color: gray;
+  font-weight: bold;
+  border-radius: 3px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
 }
 
 .home {

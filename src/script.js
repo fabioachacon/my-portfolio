@@ -2,11 +2,15 @@ import './style.css';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js';
-import { FlyControls } from 'three/examples/jsm/controls/FlyControls.js';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
+// import { FlyControls } from 'three/examples/jsm/controls/FlyControls.js';
+// import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+// import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import typefaceFont from 'three/examples/fonts/helvetiker_regular.typeface.json';
 import * as dat from 'dat.gui';
+
+// Import Shaders
+import VertexShader from './shaders/Home/vertex.glsl';
+import FragmentShader from './shaders/Home/fragment.glsl';
 
 //Debug UI
 // const gui = new dat.GUI();
@@ -28,6 +32,7 @@ const helper = new THREE.AxesHelper(50);
 
  // Container
  const jsCanvas = document.querySelector('.js-experience');
+ 
 
 
 window.addEventListener('load', () => {
@@ -52,18 +57,6 @@ window.addEventListener('resize', () =>
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 })
 
-/**
- * Objects
- */
-
- //Floor
-// const floor = new THREE.Mesh(
-//     new THREE.BoxGeometry(2, 0.1, 2),
-//     new THREE.MeshBasicMaterial({color: 'white'})
-// )
-// floor.position.y = - 0.75;
-// floor.receiveShadow = true;
-// scene.add(floor)
 
 /**
  * 3D Text
@@ -74,15 +67,15 @@ const material = new THREE.MeshMatcapMaterial({matcap: matcapTexture});
 const textGroup = new THREE.Group();
 
 const fontLoader = new THREE.FontLoader();
-let textPosition = null;
+
 fontLoader.load(
     '/fonts/helvetiker_regular.typeface.json',
     (font) => {
         const textGeometry = new THREE.TextBufferGeometry(
-             "Fabio Chacon",
+             "I Like to Solve",
             {
                 font: font,
-                size: 0.5,
+                size: 1,
                 height: 0.1,
                 curveSegments:100,
                 bevelEnabled: true,
@@ -92,8 +85,7 @@ fontLoader.load(
                 bevelSegments: 4
             }
        )
-
-
+       
        textGeometry.center();
        const text = new THREE.Mesh(textGeometry, material);
        textGroup.add(text);
@@ -105,11 +97,11 @@ fontLoader.load(
     '/fonts/helvetiker_regular.typeface.json',
     (font) => {
         const textGeometry = new THREE.TextBufferGeometry(
-             "I SOLVE PROBLEMS",
+             "PROBLEMS",
             {
                 font: font,
-                size: 0.4,
-                height: 0.2,
+                size: 0.9,
+                height: 0.3,
                 curveSegments:100,
                 bevelEnabled: true,
                 bevelThickness: 0.03,
@@ -122,7 +114,7 @@ fontLoader.load(
 
        textGeometry.center();
        const text = new THREE.Mesh(textGeometry, material);
-       text.position.y = - 0.9;
+       text.position.y = - 1.3;
        textGroup.add(text);
     //    scene.add(text)
     }
@@ -130,46 +122,53 @@ fontLoader.load(
 
 textGroup.position.y = 0.3
 scene.add(textGroup);
+
 /**
  * Particles
  */
 
  //Textures
  const particleTextures = [];
-for (let i = 0; i < 13; i++){
+for (let i = 0; i < 13; i++) {
     particleTextures[i] = textureLoader.load(`/textures/particles/${i + 1}.png`)
 }
 
 // Geometry and Material
 const particlesGeometry = new THREE.BufferGeometry();
-const particlesMaterial = new THREE.PointsMaterial({
-    size: 0.1,
-    sizeAttenuation: true,
-    transparent: true,
-    alphaMap: particleTextures[3],
-    color: "#eceba5"
-
- });
-
-particlesMaterial.depthWrite = false;
-particlesMaterial.blending = THREE.AdditiveBlending;
-particlesMaterial.vertexColors = false;
-
-const count = 6000;
+const count = 20000;
 
 const positionsParticles = new Float32Array(count * 3);
-const positionsRings = new Float32Array(count * 3);
 const colors = new Float32Array(count * 3);
+const scales = new Float32Array(count);
+const randoms = new Float32Array(count);
 
-const radius = 10;
+
+const paraboloidShape = (x, z) => {
+    return  Math.pow((x / 2), 2) - Math.pow((z / 2), 2)
+}
+
+const sphereShape = (x, z) => { 
+    return Math.sqrt(100 - Math.pow(x, 2) - Math.pow(z, 2))
+}
+
+
+const radius = 10.5;
 const a = 0.005;
-for (let i = 0; i < count; i++){
+for (let i = 0; i < count; i++) {
     let i3 = i * 3
     const phi = Math.random() * Math.PI * 2
     const theta = Math.random() * Math.PI;
     positionsParticles[i3 + 0] = radius * Math.sin(theta) * Math.cos(phi);
     positionsParticles[i3 + 1] = radius * Math.cos(theta);
     positionsParticles[i3 + 2] = radius * Math.sin(theta) * Math.sin(phi);
+    // let x = (Math.random() - .5) * 40;
+    // let z = (Math.random() - .5) * 40;
+    // positionsParticles[i3 + 0] = x;
+    // positionsParticles[i3 + 1] = sphereShape(x, z);
+    // positionsParticles[i3 + 2] = z;
+
+    scales[i] = Math.random();
+    randoms[i] = Math.random();
 
     //Helix
 
@@ -178,60 +177,66 @@ for (let i = 0; i < count; i++){
     // positionsParticles[i3 + 2] = radius * Math.sin(i)
 
     // Spherical spiral
+
     // positionsParticles[i3 + 0] = (radius * Math.cos(i)) / (Math.sqrt(Math.pow(a, 2)*Math.pow(i, 2) + 1));
     // positionsParticles[i3 + 1] = - (radius * a * i) / (Math.sqrt(Math.pow(a, 2)*Math.pow(i, 2) + 1));
     // positionsParticles[i3 + 2] = (radius * Math.sin(i)) / (Math.sqrt(Math.pow(a, 2)*Math.pow(i, 2) + 1));
 
-    //Mebius surface
+    // Möbius surface
+
     // positionsParticles[i3 + 0] = radius * Math.sin(theta) * Math.cos(phi);
     // positionsParticles[i3 + 1] = radius * Math.cos(theta);
     // positionsParticles[i3 + 2] = radius * Math.sin(theta) * Math.sin(phi);
 
 }
 
-particlesGeometry.setAttribute(
-    'position',
-     new THREE.BufferAttribute(positionsParticles, 3)
-);
+console.log(positionsParticles);
+particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positionsParticles, 3));
+particlesGeometry.setAttribute('aScale', new THREE.BufferAttribute(scales, 1) );
+particlesGeometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1));
 
+// Change to ShaderMaterial
+const particlesMaterial = new THREE.ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    vertexColors: false,
+    vertexShader: VertexShader,
+    fragmentShader: FragmentShader,
+
+    uniforms:
+    {
+        uSize: { value: 30 },
+        uTime: { value: 0 },
+        uResolution: { value: new THREE.Vector2(sizes.height, sizes.width) },
+        uColor: { value: new THREE.Color('#ffdf51') },
+        uButton: { value: false }
+    }
+
+ });
+
+
+// Move Event
+const moveButton = document.querySelector('.move');
+moveButton.addEventListener('click', (e) => {
+    if (e.target.innerText === "Move"){
+        particlesMaterial.uniforms.uButton.value = true;
+        e.target.innerText = 'Stop';
+    }else if(e.target.innerText === "Stop"){
+        particlesMaterial.uniforms.uButton.value = false;
+        e.target.innerText = 'Move';
+    }
+       
+    
+})
 
 
 //Points
 const particles = new THREE.Points(particlesGeometry, particlesMaterial)
 scene.add(particles);
 
-/**
- * Models
- */
-// const gltfLoader = new GLTFLoader();
-// let gltfModel = null;
-// gltfLoader.load( 
-//     '/models/planet/scene.gltf',
-//     (gltf) => 
-//     {
-//        //  while(gltf.scene.children.length){
-//        //      scene.add(gltf.scene.children[0])
-//        //  }
-//        // const children = [...gltf.scene.children];
-//        // for (const child of children){
-//        //     scene.add(child)
-//        // }
 
-//     //    gltf.scene.children[0].material.map = colorTexture;
-//        gltf.scene.scale.set(1, 1, 1);
-//        gltf.scene.position.set(- .1, - 0.3, 0);
-//        gltf.scene.rotation.set(0, 0.4, 0.02);
-//        gltfModel = gltf.scene;
-//     //    gui.add(gltf.scene.position, 'x').min(-50).max(50).step(0.01)
-//     //    gui.add(gltf.scene.position, 'y').min(-50).max(50).step(0.01)
-//     //    gui.add(gltf.scene.position, 'z').min(-50).max(50).step(0.01)
-//     //    scene.add(gltf.scene)
-//        console.log(gltf);
-//     }
-// )
-
-//Mouse
-
+// Mouse
 const mouse = new THREE.Vector2();
 window.addEventListener('mousemove', (e) =>{
     mouse.x = (e.clientX / sizes.width) * 2 - 1;
@@ -263,7 +268,8 @@ scene.add(pointLight);
 
 //Camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height,  0.1, 100);
-camera.position.z = 5;
+camera.position.z = 10;
+camera.position.y = -1;
 scene.add(camera);
 
 //Controls
@@ -273,7 +279,8 @@ controls.enableDamping = true;
 // controls.enableZoom = false;
 controls.dampingFactor = 0.02
 controls.enablePan = false;
-controls.maxDistance = 28;
+controls.minDistance = 8;
+controls.maxDistance = 20;
 // controls.minPolarAngle = 1.5;
 // controls.maxPolarAngle = 1.5;
 
@@ -293,7 +300,9 @@ const clock = new THREE.Clock()
 
 const animate = () => {
 
-    const elapsed = clock.getElapsedTime()
+    const elapsed = clock.getElapsedTime();
+
+    particlesMaterial.uniforms.uTime.value = elapsed;
 
     //Update Controls
     controls.update();
@@ -302,12 +311,9 @@ const animate = () => {
     // camera.position.z = 5 * Math.cos(mouse.x * Math.PI / 5)
     camera.lookAt(textGroup.position);
 
-    particles.rotation.y = 0.005 * elapsed * Math.PI * 2
-
     //Render
     renderer.render(scene, camera)
 
-   
     requestAnimationFrame(animate);
 
 }
