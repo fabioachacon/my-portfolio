@@ -248,7 +248,7 @@ const particlesMaterial = new THREE.ShaderMaterial({
 
     uniforms:
     {
-        uSize: { value: 40 },
+        uSize: { value: 40 * renderer.getPixelRatio()},
         uTime: { value: 0 },
         uResolution: { value: new THREE.Vector2(sizes.height, sizes.width) },
         uColor: { value: new THREE.Color('#ffdf51') },
@@ -305,7 +305,7 @@ directionalLight.position.set(5, 5, 5)
 // scene.add(directionalLight)
 
 const pointLight = new THREE.PointLight('#fffff', 0.9, 10, 2);
-pointLight.position.set(0, 3, - 3);
+pointLight.position.set(textGroup.position.x, 4, textGroup.position.z);
 // scene.add(pointLight);
 
 
