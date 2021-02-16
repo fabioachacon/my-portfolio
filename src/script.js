@@ -71,11 +71,11 @@ const fontLoader = new THREE.FontLoader();
 fontLoader.load(
     '/fonts/helvetiker_regular.typeface.json',
     (font) => {
-        const textGeometry = new THREE.TextBufferGeometry(
+        const textGeometry = new THREE.TextGeometry(
              "I Like to Solve",
             {
                 font: font,
-                size: 1,
+                size: 1.1,
                 height: 0.1,
                 curveSegments:100,
                 bevelEnabled: true,
@@ -100,7 +100,7 @@ fontLoader.load(
              "PROBLEMS",
             {
                 font: font,
-                size: 0.9,
+                size: 1,
                 height: 0.3,
                 curveSegments:100,
                 bevelEnabled: true,
@@ -114,13 +114,13 @@ fontLoader.load(
 
        textGeometry.center();
        const text = new THREE.Mesh(textGeometry, material);
-       text.position.y = - 1.3;
+       text.position.y = 1.3;
        textGroup.add(text);
-    //    scene.add(text)
+       scene.add(text)
     }
 );
 
-textGroup.position.y = 0.3
+textGroup.position.y = 3
 scene.add(textGroup);
 
 /**
@@ -134,8 +134,19 @@ for (let i = 0; i < 13; i++) {
 }
 
 // Geometry and Material
-const particlesGeometry = new THREE.BufferGeometry();
+
 const count = 20000;
+
+// Cube
+const cube = new THREE.BoxGeometry(15, 15, 15, 32, 32, 32);
+const torus = new THREE.TorusGeometry( 10, 3, 16, 100 );
+// const cartesianCubeVertex = new Float32Array(count * 3);
+// cartesianCubeVertex.forEach((value, i) => cartesianCubeVertex[i] = (Math.random() - .5) * 10.5);
+
+// cube.setAttribute('position', new THREE.BufferAttribute(cartesianCubeVertex, 3));
+
+// Particles
+const particlesGeometry = new THREE.BufferGeometry();
 
 const positionsParticles = new Float32Array(count * 3);
 const colors = new Float32Array(count * 3);
@@ -152,7 +163,7 @@ const sphereShape = (x, z) => {
 }
 
 
-const radius = 10.5;
+const radius = 12;
 const a = 0.005;
 for (let i = 0; i < count; i++) {
     let i3 = i * 3
@@ -166,6 +177,13 @@ for (let i = 0; i < count; i++) {
     // positionsParticles[i3 + 0] = x;
     // positionsParticles[i3 + 1] = sphereShape(x, z);
     // positionsParticles[i3 + 2] = z;
+
+
+
+    // positionsParticles[i3 + 0] = (Math.random() - 0.5) * 10;
+    // positionsParticles[i3 + 1] = (Math.random() - 0.5) * 10;
+    // positionsParticles[i3 + 2] = (Math.random() - 0.5) * 10;
+
 
     scales[i] = Math.random();
     randoms[i] = Math.random();
@@ -190,8 +208,23 @@ for (let i = 0; i < count; i++) {
 
 }
 
-console.log(positionsParticles);
+const sphere = new THREE.SphereGeometry(10, 55, 55);
+/**
+ * Postion attribute of a Geometry is the array holding the
+ * positions of all vertices composing the geometry
+ */
+// particlesGeometry.attributes.position = sphere.attributes.position;
+// particlesGeometry.attributes.uv = sphere.attributes.uv;
+
+// const torus = new THREE.TorusGeometry( 10, 3, 16, 100 );
+// particlesGeometry.attributes.position = torus.attributes.position;
+// particlesGeometry.attributes.uv = torus.attributes.uv;
+
+console.log(textGroup);
+
 particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positionsParticles, 3));
+particlesGeometry.setAttribute('aCube', new THREE.BufferAttribute(cube.attributes.position.array, 3));
+particlesGeometry.setAttribute('aTorus', new THREE.BufferAttribute(torus.attributes.position.array, 3));
 particlesGeometry.setAttribute('aScale', new THREE.BufferAttribute(scales, 1) );
 particlesGeometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1));
 
@@ -206,14 +239,28 @@ const particlesMaterial = new THREE.ShaderMaterial({
 
     uniforms:
     {
-        uSize: { value: 30 },
+        uSize: { value: 40 },
         uTime: { value: 0 },
         uResolution: { value: new THREE.Vector2(sizes.height, sizes.width) },
         uColor: { value: new THREE.Color('#ffdf51') },
-        uButton: { value: false }
+        uButton: { value: false },
     }
 
  });
+
+
+//Points
+
+const particles = new THREE.Points(particlesGeometry, particlesMaterial)
+scene.add(particles);
+
+// Mouse
+
+const mouse = new THREE.Vector2();
+window.addEventListener('mousemove', (e) =>{
+    mouse.x = (e.clientX / sizes.width) * 2 - 1;
+    mouse.y = - (e.clientY / sizes.height) * 2 + 1;
+}, false)
 
 
 // Move Event
@@ -226,22 +273,7 @@ moveButton.addEventListener('click', (e) => {
         particlesMaterial.uniforms.uButton.value = false;
         e.target.innerText = 'Move';
     }
-       
-    
 })
-
-
-//Points
-const particles = new THREE.Points(particlesGeometry, particlesMaterial)
-scene.add(particles);
-
-
-// Mouse
-const mouse = new THREE.Vector2();
-window.addEventListener('mousemove', (e) =>{
-    mouse.x = (e.clientX / sizes.width) * 2 - 1;
-    mouse.y = - (e.clientY / sizes.height) * 2 + 1;
-}, false)
 
 /**
  * Lights
@@ -268,8 +300,8 @@ scene.add(pointLight);
 
 //Camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height,  0.1, 100);
-camera.position.z = 10;
-camera.position.y = -1;
+camera.position.z = 22;
+camera.position.y = -6;
 scene.add(camera);
 
 //Controls
@@ -280,7 +312,7 @@ controls.enableDamping = true;
 controls.dampingFactor = 0.02
 controls.enablePan = false;
 controls.minDistance = 8;
-controls.maxDistance = 20;
+controls.maxDistance = 24;
 // controls.minPolarAngle = 1.5;
 // controls.maxPolarAngle = 1.5;
 

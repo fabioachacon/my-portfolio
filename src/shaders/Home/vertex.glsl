@@ -7,23 +7,28 @@ uniform vec2 uResolution;
 
 attribute float aScale;
 attribute float aRandom;
+attribute vec3 aCube;
+attribute vec3 aTorus;
+
 varying float vRandom;
 // varying float vRandom;
 
 
 
 void main() {
-
+  
     vec4 modelPosition = modelMatrix * vec4(position, 1.0);
-
-    // float plane =  - modelPosition.x - 2.0;
-    // modelPosition = max(modelPosition, plane);
-
+    
+    vec3 sphere = modelPosition.xyz;
+    vec3 cube = aCube;
+    vec3 torus = aTorus;
 
     // float radius = length(modelPosition) * (1.5 + sin(uTime * 2.0 * PI * 0.2));
     float radius = length(modelPosition);
     float tetha = atan(length(modelPosition.xz) / modelPosition.y);
     float phi = atan(modelPosition.z / modelPosition.x);
+
+    float transition =  (1.0 - cos(2.0 * PI * uTime * 0.1)) / 2.0;
 
     /*
      Change polarOffset to phasePolar in order to have
@@ -36,14 +41,14 @@ void main() {
     float phasePolar = (uTime * 0.01 + 20.0 * tetha);
     float phaseAzimuth = (uTime * 0.01 + 20.0 * phi);
 
+    modelPosition.xyz = mix(cube, sphere, transition);
+
 
     if (uButton) {
       modelPosition.x =  radius * sin(phasePolar) * cos(phaseAzimuth);
       modelPosition.y =  radius * cos(phasePolar); 
       modelPosition.z =  radius * sin(phasePolar) * sin(phaseAzimuth);
-    }
-
-
+    } 
 
     vec4 viewPosition = viewMatrix * modelPosition;
     vec4 projectedPosition = projectionMatrix * viewPosition;
