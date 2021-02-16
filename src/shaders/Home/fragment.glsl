@@ -21,6 +21,7 @@ void main() {
     strength *= 2.0;
     strength = (1.0 - strength);
 
+
     // Light Point Pattern
     // float strength = distance(gl_PointCoord, vec2(0.5));
     // strength = 1.0 - strength;

@@ -75,8 +75,8 @@ fontLoader.load(
              "I Like to Solve",
             {
                 font: font,
-                size: 1.1,
-                height: 0.1,
+                size: 1.4,
+                height: 0.3,
                 curveSegments:100,
                 bevelEnabled: true,
                 bevelThickness: 0.03,
@@ -89,7 +89,6 @@ fontLoader.load(
        textGeometry.center();
        const text = new THREE.Mesh(textGeometry, material);
        textGroup.add(text);
-    //    scene.add(text)
     }
 );
 
@@ -100,8 +99,8 @@ fontLoader.load(
              "PROBLEMS",
             {
                 font: font,
-                size: 1,
-                height: 0.3,
+                size: 1.4,
+                height: 0.4,
                 curveSegments:100,
                 bevelEnabled: true,
                 bevelThickness: 0.03,
@@ -111,12 +110,11 @@ fontLoader.load(
             }
        )
 
-
        textGeometry.center();
        const text = new THREE.Mesh(textGeometry, material);
-       text.position.y = 1.3;
+       text.position.y = - 2;
        textGroup.add(text);
-       scene.add(text)
+
     }
 );
 
@@ -166,12 +164,18 @@ const sphereShape = (x, z) => {
 const radius = 12;
 const a = 0.005;
 for (let i = 0; i < count; i++) {
+    
     let i3 = i * 3
     const phi = Math.random() * Math.PI * 2
     const theta = Math.random() * Math.PI;
+
     positionsParticles[i3 + 0] = radius * Math.sin(theta) * Math.cos(phi);
     positionsParticles[i3 + 1] = radius * Math.cos(theta);
     positionsParticles[i3 + 2] = radius * Math.sin(theta) * Math.sin(phi);
+
+    scales[i] = Math.random();
+    randoms[i] = Math.random();
+
     // let x = (Math.random() - .5) * 40;
     // let z = (Math.random() - .5) * 40;
     // positionsParticles[i3 + 0] = x;
@@ -183,10 +187,6 @@ for (let i = 0; i < count; i++) {
     // positionsParticles[i3 + 0] = (Math.random() - 0.5) * 10;
     // positionsParticles[i3 + 1] = (Math.random() - 0.5) * 10;
     // positionsParticles[i3 + 2] = (Math.random() - 0.5) * 10;
-
-
-    scales[i] = Math.random();
-    randoms[i] = Math.random();
 
     //Helix
 
@@ -208,7 +208,7 @@ for (let i = 0; i < count; i++) {
 
 }
 
-const sphere = new THREE.SphereGeometry(10, 55, 55);
+// const sphere = new THREE.SphereGeometry(10, 55, 55);
 /**
  * Postion attribute of a Geometry is the array holding the
  * positions of all vertices composing the geometry
@@ -220,7 +220,6 @@ const sphere = new THREE.SphereGeometry(10, 55, 55);
 // particlesGeometry.attributes.position = torus.attributes.position;
 // particlesGeometry.attributes.uv = torus.attributes.uv;
 
-console.log(textGroup);
 
 particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positionsParticles, 3));
 particlesGeometry.setAttribute('aCube', new THREE.BufferAttribute(cube.attributes.position.array, 3));
@@ -229,6 +228,7 @@ particlesGeometry.setAttribute('aScale', new THREE.BufferAttribute(scales, 1) );
 particlesGeometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1));
 
 // Change to ShaderMaterial
+
 const particlesMaterial = new THREE.ShaderMaterial({
     transparent: true,
     depthWrite: false,
@@ -236,7 +236,6 @@ const particlesMaterial = new THREE.ShaderMaterial({
     vertexColors: false,
     vertexShader: VertexShader,
     fragmentShader: FragmentShader,
-
     uniforms:
     {
         uSize: { value: 40 },
@@ -251,7 +250,8 @@ const particlesMaterial = new THREE.ShaderMaterial({
 
 //Points
 
-const particles = new THREE.Points(particlesGeometry, particlesMaterial)
+const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+particles.position.y = 1.5;
 scene.add(particles);
 
 // Mouse

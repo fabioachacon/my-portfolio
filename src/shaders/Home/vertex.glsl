@@ -24,11 +24,12 @@ void main() {
     vec3 torus = aTorus;
 
     // float radius = length(modelPosition) * (1.5 + sin(uTime * 2.0 * PI * 0.2));
+    
     float radius = length(modelPosition);
     float tetha = atan(length(modelPosition.xz) / modelPosition.y);
     float phi = atan(modelPosition.z / modelPosition.x);
 
-    float transition =  (1.0 - cos(2.0 * PI * uTime * 0.1)) / 2.0;
+    float transition = (1.0 - cos(2.0 * PI * uTime * 0.1)) / 2.0;
 
     /*
      Change polarOffset to phasePolar in order to have

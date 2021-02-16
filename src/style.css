@@ -35,7 +35,7 @@ header > .container {
   width: 50%;
   justify-content: center;
   gap: 6rem;
-  margin-left: 5rem;
+  /* margin-left: 5rem; */
 }
 
 .navbar ul li {
@@ -81,6 +81,7 @@ header > .container {
   font-size: 13px;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
+  display: none;
 }
 
 .home {
