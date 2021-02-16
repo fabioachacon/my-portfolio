@@ -32,16 +32,23 @@ const helper = new THREE.AxesHelper(50);
 
  // Container
  const jsCanvas = document.querySelector('.js-experience');
+
+ // Sizes
+const  sizes = {};
+sizes.width =  window.innerWidth;
+sizes.height = window.innerHeight;
+
+ //Renderer
+const renderer = new THREE.WebGLRenderer({
+    canvas,
+    antialias: true,
+});
+
+// Renderer
+renderer.setSize(sizes.width, sizes.height);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));  //Pixel Ratio
+renderer.physicallyCorrectLights = true;
  
-
-
-window.addEventListener('load', () => {
-    
-    //Sizes
-    let sizes = {};
-    sizes.width =  window.innerWidth;
-    sizes.height = window.innerHeight;
-
 window.addEventListener('resize', () =>
 {
     // Update sizes
@@ -69,14 +76,14 @@ const textGroup = new THREE.Group();
 const fontLoader = new THREE.FontLoader();
 
 fontLoader.load(
-    '/fonts/helvetiker_regular.typeface.json',
+    '/fonts/optimer_bold.typeface.json',
     (font) => {
         const textGeometry = new THREE.TextGeometry(
              "I Like to Solve",
             {
                 font: font,
-                size: 1.4,
-                height: 0.3,
+                size: 1.3,
+                height: 0.4,
                 curveSegments:100,
                 bevelEnabled: true,
                 bevelThickness: 0.03,
@@ -93,14 +100,14 @@ fontLoader.load(
 );
 
 fontLoader.load(
-    '/fonts/helvetiker_regular.typeface.json',
+    '/fonts/optimer_bold.typeface.json',
     (font) => {
         const textGeometry = new THREE.TextBufferGeometry(
              "PROBLEMS",
             {
                 font: font,
-                size: 1.4,
-                height: 0.4,
+                size: 1.3,
+                height: 0.5,
                 curveSegments:100,
                 bevelEnabled: true,
                 bevelThickness: 0.03,
@@ -118,7 +125,7 @@ fontLoader.load(
     }
 );
 
-textGroup.position.y = 3
+textGroup.position.y = 9
 scene.add(textGroup);
 
 /**
@@ -126,6 +133,7 @@ scene.add(textGroup);
  */
 
  //Textures
+ 
  const particleTextures = [];
 for (let i = 0; i < 13; i++) {
     particleTextures[i] = textureLoader.load(`/textures/particles/${i + 1}.png`)
@@ -145,7 +153,6 @@ const torus = new THREE.TorusGeometry( 10, 3, 16, 100 );
 
 // Particles
 const particlesGeometry = new THREE.BufferGeometry();
-
 const positionsParticles = new Float32Array(count * 3);
 const colors = new Float32Array(count * 3);
 const scales = new Float32Array(count);
@@ -161,8 +168,9 @@ const sphereShape = (x, z) => {
 }
 
 
-const radius = 12;
+const radius = 13;
 const a = 0.005;
+
 for (let i = 0; i < count; i++) {
     
     let i3 = i * 3
@@ -224,8 +232,9 @@ for (let i = 0; i < count; i++) {
 particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positionsParticles, 3));
 particlesGeometry.setAttribute('aCube', new THREE.BufferAttribute(cube.attributes.position.array, 3));
 particlesGeometry.setAttribute('aTorus', new THREE.BufferAttribute(torus.attributes.position.array, 3));
-particlesGeometry.setAttribute('aScale', new THREE.BufferAttribute(scales, 1) );
+particlesGeometry.setAttribute('aScale', new THREE.BufferAttribute(scales, 1));
 particlesGeometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1));
+// particlesGeometry.setAttribute('aCubeUv', new THREE.BufferAttribute(cube.attributes.uv.array, 2));
 
 // Change to ShaderMaterial
 
@@ -236,6 +245,7 @@ const particlesMaterial = new THREE.ShaderMaterial({
     vertexColors: false,
     vertexShader: VertexShader,
     fragmentShader: FragmentShader,
+
     uniforms:
     {
         uSize: { value: 40 },
@@ -243,6 +253,7 @@ const particlesMaterial = new THREE.ShaderMaterial({
         uResolution: { value: new THREE.Vector2(sizes.height, sizes.width) },
         uColor: { value: new THREE.Color('#ffdf51') },
         uButton: { value: false },
+        uTexture: { value: particleTextures[3] }
     }
 
  });
@@ -251,7 +262,7 @@ const particlesMaterial = new THREE.ShaderMaterial({
 //Points
 
 const particles = new THREE.Points(particlesGeometry, particlesMaterial);
-particles.position.y = 1.5;
+particles.position.y = - 2;
 scene.add(particles);
 
 // Mouse
@@ -280,7 +291,7 @@ moveButton.addEventListener('click', (e) => {
  */
 
 const ambientLight = new THREE.AmbientLight(0xffffff, 1)
-scene.add(ambientLight)
+// scene.add(ambientLight)
 
 const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6)
 directionalLight.castShadow = true
@@ -291,17 +302,17 @@ directionalLight.shadow.camera.top = 7
 directionalLight.shadow.camera.right = 7
 directionalLight.shadow.camera.bottom = - 7
 directionalLight.position.set(5, 5, 5)
-scene.add(directionalLight)
+// scene.add(directionalLight)
 
 const pointLight = new THREE.PointLight('#fffff', 0.9, 10, 2);
 pointLight.position.set(0, 3, - 3);
-scene.add(pointLight);
+// scene.add(pointLight);
 
 
 //Camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height,  0.1, 100);
-camera.position.z = 22;
-camera.position.y = -6;
+camera.position.z = 24;
+camera.position.y = -4;
 scene.add(camera);
 
 //Controls
@@ -317,15 +328,6 @@ controls.maxDistance = 24;
 // controls.maxPolarAngle = 1.5;
 
 
-//Renderer
-const renderer = new THREE.WebGLRenderer({
-    canvas,
-    antialias: true,
-});
-renderer.setSize(sizes.width, sizes.height);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));  //Pixel Ratio
-renderer.physicallyCorrectLights = true;
-
 
 //Clock
 const clock = new THREE.Clock()
@@ -336,12 +338,14 @@ const animate = () => {
 
     particlesMaterial.uniforms.uTime.value = elapsed;
 
+    // particles.rotation.y = Math.PI * 2 * elapsed * 0.05;
+
     //Update Controls
     controls.update();
     // camera.position.x = 5 * Math.sin(mouse.x * Math.PI / 5);
     // camera.position.y = mouse.y;
     // camera.position.z = 5 * Math.cos(mouse.x * Math.PI / 5)
-    camera.lookAt(textGroup.position);
+    // camera.lookAt(textGroup.position);
 
     //Render
     renderer.render(scene, camera)
@@ -352,5 +356,5 @@ const animate = () => {
 
 animate();
 
-})
+
 

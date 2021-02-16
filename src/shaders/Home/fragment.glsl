@@ -5,10 +5,15 @@ varying vec3 vColor;
 uniform vec3 uColor;
 uniform float uTime;
 uniform vec2 uResolution;
+uniform sampler2D uTexture;
+
+
+varying vec2 vUv;
 
 void main() {
     
     vec2 p = gl_PointCoord / uResolution.xy;
+    // vec4 texture = texture2D(uTexture, vUv);
 
     float f = p.y;
 

@@ -11,6 +11,8 @@ attribute vec3 aCube;
 attribute vec3 aTorus;
 
 varying float vRandom;
+varying vec2 vUv;
+
 // varying float vRandom;
 
 
@@ -23,8 +25,9 @@ void main() {
     vec3 cube = aCube;
     vec3 torus = aTorus;
 
+    cube.y -= 1.8;
+
     // float radius = length(modelPosition) * (1.5 + sin(uTime * 2.0 * PI * 0.2));
-    
     float radius = length(modelPosition);
     float tetha = atan(length(modelPosition.xz) / modelPosition.y);
     float phi = atan(modelPosition.z / modelPosition.x);
@@ -42,8 +45,9 @@ void main() {
     float phasePolar = (uTime * 0.01 + 20.0 * tetha);
     float phaseAzimuth = (uTime * 0.01 + 20.0 * phi);
 
-    modelPosition.xyz = mix(cube, sphere, transition);
 
+    vec3 cubeSphere = mix(cube, sphere, transition);
+    modelPosition.xyz = cubeSphere;
 
     if (uButton) {
       modelPosition.x =  radius * sin(phasePolar) * cos(phaseAzimuth);
@@ -55,6 +59,8 @@ void main() {
     vec4 projectedPosition = projectionMatrix * viewPosition;
 
     gl_Position = projectedPosition;
+
+    vUv = uv;
     vRandom = aRandom;
 
     /*
