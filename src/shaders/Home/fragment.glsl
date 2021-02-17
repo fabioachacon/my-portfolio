@@ -23,8 +23,9 @@ void main() {
 
     // Diffuse Point
     float strength = distance(gl_PointCoord, vec2(0.5));
-    strength *= 2.0;
-    strength = (1.0 - strength);
+    strength = smoothstep(0.5, 0.0, strength) * 2.0;
+    // strength *= 2.0;
+    // strength = (1.0 - strength);
 
 
     // Light Point Pattern

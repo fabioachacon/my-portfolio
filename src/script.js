@@ -2,9 +2,6 @@ import './style.css';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js';
-// import { FlyControls } from 'three/examples/jsm/controls/FlyControls.js';
-// import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-// import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import typefaceFont from 'three/examples/fonts/helvetiker_regular.typeface.json';
 import * as dat from 'dat.gui';
 
@@ -30,9 +27,6 @@ const helper = new THREE.AxesHelper(50);
  // Canvas
  const canvas = document.querySelector('.js-canvas');
 
- // Container
- const jsCanvas = document.querySelector('.js-experience');
-
  // Sizes
 const  sizes = {};
 sizes.width =  window.innerWidth;
@@ -44,10 +38,11 @@ const renderer = new THREE.WebGLRenderer({
     antialias: true,
 });
 
+
 // Renderer
+
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));  //Pixel Ratio
-renderer.physicallyCorrectLights = true;
  
 window.addEventListener('resize', () =>
 {
@@ -61,7 +56,8 @@ window.addEventListener('resize', () =>
 
     // Update renderer
     renderer.setSize(sizes.width, sizes.height)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
 })
 
 
@@ -133,8 +129,7 @@ scene.add(textGroup);
  */
 
  //Textures
- 
- const particleTextures = [];
+const particleTextures = [];
 for (let i = 0; i < 13; i++) {
     particleTextures[i] = textureLoader.load(`/textures/particles/${i + 1}.png`)
 }
@@ -266,25 +261,12 @@ particles.position.y = - 2;
 scene.add(particles);
 
 // Mouse
-
 const mouse = new THREE.Vector2();
 window.addEventListener('mousemove', (e) =>{
     mouse.x = (e.clientX / sizes.width) * 2 - 1;
     mouse.y = - (e.clientY / sizes.height) * 2 + 1;
 }, false)
 
-
-// Move Event
-const moveButton = document.querySelector('.move');
-moveButton.addEventListener('click', (e) => {
-    if (e.target.innerText === "Move"){
-        particlesMaterial.uniforms.uButton.value = true;
-        e.target.innerText = 'Stop';
-    }else if(e.target.innerText === "Stop"){
-        particlesMaterial.uniforms.uButton.value = false;
-        e.target.innerText = 'Move';
-    }
-})
 
 /**
  * Lights

@@ -27,13 +27,14 @@ void main() {
 
     cube.y -= 1.8;
 
-    // float radius = length(modelPosition) * (1.5 + sin(uTime * 2.0 * PI * 0.2));
-    float radius = length(modelPosition);
+    float radius = length(modelPosition) * (1.5 + sin(uTime * 2.0 * PI * 0.2));
+    // float radius = length(modelPosition);
     float tetha = atan(length(modelPosition.xz) / modelPosition.y);
     float phi = atan(modelPosition.z / modelPosition.x);
 
     float transition = (1.0 - cos(2.0 * PI * uTime * 0.1)) / 2.0;
-
+    // float transition = smoothstep(0.2, 1.0, cos(2.0 * PI * uTime * 0.1));
+    
     /*
      Change polarOffset to phasePolar in order to have
      a complete sphere from the beginning.
@@ -45,8 +46,10 @@ void main() {
     float phasePolar = (uTime * 0.01 + 20.0 * tetha);
     float phaseAzimuth = (uTime * 0.01 + 20.0 * phi);
 
+    // vec3 _sphere = smoothstep(radius * 0.2, radius, sh);
 
     vec3 cubeSphere = mix(cube, sphere, transition);
+
     modelPosition.xyz = cubeSphere;
 
     if (uButton) {
