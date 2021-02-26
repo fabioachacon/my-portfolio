@@ -1,4 +1,4 @@
-import './style.css';
+import '../style.css';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js';
@@ -6,8 +6,8 @@ import typefaceFont from 'three/examples/fonts/helvetiker_regular.typeface.json'
 import * as dat from 'dat.gui';
 
 // Import Shaders
-import VertexShader from './shaders/Home/vertex.glsl';
-import FragmentShader from './shaders/Home/fragment.glsl';
+import VertexShader from '../shaders/Home/vertex.glsl';
+import FragmentShader from '../shaders/Home/fragment.glsl';
 
 //Debug UI
 // const gui = new dat.GUI();
@@ -136,7 +136,7 @@ for (let i = 0; i < 13; i++) {
 
 // Geometry and Material
 
-const count = 20000;
+const count = 9000;
 
 // Cube
 const cube = new THREE.BoxGeometry(15, 15, 15, 32, 32, 32);
@@ -268,30 +268,7 @@ window.addEventListener('mousemove', (e) =>{
 }, false)
 
 
-/**
- * Lights
- */
-
-const ambientLight = new THREE.AmbientLight(0xffffff, 1)
-// scene.add(ambientLight)
-
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6)
-directionalLight.castShadow = true
-directionalLight.shadow.mapSize.set(1024, 1024)
-directionalLight.shadow.camera.far = 15
-directionalLight.shadow.camera.left = - 7
-directionalLight.shadow.camera.top = 7
-directionalLight.shadow.camera.right = 7
-directionalLight.shadow.camera.bottom = - 7
-directionalLight.position.set(5, 5, 5)
-// scene.add(directionalLight)
-
-const pointLight = new THREE.PointLight('#fffff', 0.9, 10, 2);
-pointLight.position.set(textGroup.position.x, 4, textGroup.position.z);
-// scene.add(pointLight);
-
-
-//Camera
+// Camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height,  0.1, 100);
 camera.position.z = 24;
 camera.position.y = -4;
@@ -320,14 +297,8 @@ const animate = () => {
 
     particlesMaterial.uniforms.uTime.value = elapsed;
 
-    // particles.rotation.y = Math.PI * 2 * elapsed * 0.05;
-
     //Update Controls
     controls.update();
-    // camera.position.x = 5 * Math.sin(mouse.x * Math.PI / 5);
-    // camera.position.y = mouse.y;
-    // camera.position.z = 5 * Math.cos(mouse.x * Math.PI / 5)
-    // camera.lookAt(textGroup.position);
 
     //Render
     renderer.render(scene, camera)
